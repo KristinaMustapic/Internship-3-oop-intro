@@ -9,8 +9,9 @@ namespace internship_3_oop_intro
 
         static void Main(string[] args)
         {
+            //Testing example
             DateTime date1 = new DateTime(2015, 12, 24);
-            DateTime date2 = new DateTime(2015, 12, 25);
+            DateTime date2 = new DateTime(2015, 12, 27);
             var event1_Info = new Event("Coffee break", 1+0, date1, date2);
             var event1_Attendes = new List<Person>();
             event1_Attendes.Add(new Person("Anna", "Jo", 1234, 098));
@@ -21,17 +22,14 @@ namespace internship_3_oop_intro
                 { event1_Info, event1_Attendes}
             };
 
-
-            foreach (var happen in eventsInfo)
-            {
-                Console.WriteLine(happen.Key.Name + " " + happen.Value[0].FirstName);
-            }
-
             var a = -1;
             while (a != 0)
             {
                 Menu();
-                var choice = int.Parse(Console.ReadLine());
+                //var choice = int.Parse(Console.ReadLine());
+                var input = Console.ReadLine();
+                var choice = -1;
+                isValidNumberInput(input, ref choice);
                 var option = (Option)choice;
 
                 switch (option)
@@ -65,7 +63,7 @@ namespace internship_3_oop_intro
                         break;
 
                     default:
-                        Console.WriteLine("Krivi unos");
+                        Console.WriteLine("Krivi unos. Ponovite unos odabira.");
                         break;
                 }
             }
@@ -205,21 +203,35 @@ namespace internship_3_oop_intro
                     Console.WriteLine("Vrijeme početka i kraja event-a ne mogu biti isti. Ponovite unos.");
                 }
                 else
-                {
-                    a = 0;
+                {   
+                    DateTime existingStartTime = new DateTime();
+                    DateTime existingEndTime = new DateTime();
+                    foreach (var existingEvent in dictionary.Keys)
+                    {
+                        existingStartTime = existingEvent.StartTime;
+                        existingEndTime = existingEvent.EndTime;
+                        if (IsTimeIntervalFree(startTime, endTime, existingStartTime, existingEndTime))
+                        {
+                            a = 0;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Uneseno vrijeme se preklapa s vremenom već postojećeg event-a. Unesite novo vrijeme za održavanje event-a.");
+                        }
+                    }
                 }
             }
-
-            var newEvent = new Event(name, typeOfEvent, startTime, endTime);
-            var eventAttendes = new List<Person>();
-            dictionary.Add(newEvent, eventAttendes);
-            var i = 0;
-            Console.WriteLine("Ovo je Vaš trenutni popis event-ova:");
-            foreach (var item in dictionary)
-            {
-                Console.WriteLine(" " + i + " - " + item.Key.Name + " (" + item.Key.TypeOfEvent + ") (Početak event-a: " + item.Key.StartTime + " , kraj event-a: " + item.Key.EndTime + ") ");
-                i++;
-            }
+                   
+                    var newEvent = new Event(name, typeOfEvent, startTime, endTime);
+                    var eventAttendes = new List<Person>();
+                    dictionary.Add(newEvent, eventAttendes);
+                    var i = 0;
+                    Console.WriteLine("Ovo je Vaš trenutni popis event-ova:");
+                    foreach (var item in dictionary)
+                    {
+                        Console.WriteLine(" " + i + " - " + item.Key.Name + " (" + item.Key.TypeOfEvent + ") (Početak event-a: " + item.Key.StartTime + " , kraj event-a: " + item.Key.EndTime + ") ");
+                        i++;
+                    }
         }
 
 
@@ -313,11 +325,11 @@ namespace internship_3_oop_intro
                 else
                 {
                     //by default only left option is editing an event
-                    var b = -1;
+                    a = -1;
                     var name = "";
 
 
-                    while (b != 0)
+                    while (a != 0)
                     {
                         Console.WriteLine("Unesite ime event-a: ");
                         name = Console.ReadLine();
@@ -327,13 +339,13 @@ namespace internship_3_oop_intro
 
                         }
                         else
-                            b = 0;
+                            a = 0;
                     }
 
 
-                    b = -1;
+                    a = -1;
                     int typeOfEvent = -1;
-                    while (b != 0)
+                    while (a != 0)
                     {
                         Console.WriteLine("Odaberite tip novog event-a unosom odgovarajućeg broja:");
                         Console.WriteLine(
@@ -351,7 +363,7 @@ namespace internship_3_oop_intro
                             if (number >= 0 && number <= 4)
                             {
                                 typeOfEvent = number;
-                                b = 0;
+                                a = 0;
                             }
                             else
                             {
@@ -365,10 +377,10 @@ namespace internship_3_oop_intro
                     }
 
 
-                    b = -1; 
-                    DateTime startTime = new DateTime(2017, 1, 18);
-                    DateTime endTime = new DateTime(2017, 1, 18);
-                    while (b != 0)
+                    a = -1;
+                    DateTime startTime = new DateTime();
+                    DateTime endTime = new DateTime();
+                    while (a != 0)
                     {
                         Console.WriteLine("Unesite početak trajanja event-a u formatu dd/mm/yyyy hh:mm");
                         startTime = setDateTime();
@@ -385,9 +397,24 @@ namespace internship_3_oop_intro
                         }
                         else
                         {
-                            b = 0;
+                            DateTime existingStartTime = new DateTime();
+                            DateTime existingEndTime = new DateTime();
+                            foreach (var existingEvent in dictionary.Keys)
+                            {
+                                existingStartTime = existingEvent.StartTime;
+                                existingEndTime = existingEvent.EndTime;
+                                if (IsTimeIntervalFree(startTime, endTime, existingStartTime, existingEndTime))
+                                {
+                                    a = 0;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Uneseno vrijeme se preklapa s vremenom već postojećeg event-a. Unesite novo vrijeme za održavanje event-a.");
+                                }
+                            }
                         }
                     }
+
                     chosenEvent.Name = name;
                     chosenEvent.TypeOfEvent = (EventType)typeOfEvent;
                     chosenEvent.StartTime = startTime;
@@ -837,15 +864,47 @@ namespace internship_3_oop_intro
             Console.WriteLine("Prekinuli ste rad aplikacije.");
             a = 0;
         }
+
+
+        static bool IsTimeIntervalFree(DateTime startTimeOfNewEvent, DateTime endTimeOfNewEvent, DateTime startTimeOfExistingEvent, DateTime endTimeOfExistingEvent)
+        {
+            if((startTimeOfNewEvent < endTimeOfExistingEvent) && (endTimeOfNewEvent > startTimeOfExistingEvent))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
      
          
+        static void isValidNumberInput(string input, ref int inputNumber)
+        {
+            inputNumber = -1;
+            var number = -1;
+            bool isNumber = Int32.TryParse(input, out number);
+            if (isNumber)
+            {
+                if (number >= 1 && number <=7 )
+                {
+                    inputNumber = number;
+                }
+                else
+                {
+                    Console.WriteLine("Unijeli ste broj koji nije ponuđen.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Niste unijeli broj.");
+            }
+        }
     }
 }
 
 /*
 dodatni features:
 -func za provjeru unosa broja
--popravi za dodavanj eventa ne smiju imat preklapanje u vrimenu / overlaping
 -func kod unosa i edita eventa
--switch and enum 
  */

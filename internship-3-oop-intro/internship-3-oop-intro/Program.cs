@@ -1,86 +1,105 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 
 namespace internship_3_oop_intro
 {
     class Program
     {
-        enum Option
-        {
-            AddEvent = 1,
 
-        }
         static void Main(string[] args)
         {
             DateTime date1 = new DateTime(2015, 12, 24);
             DateTime date2 = new DateTime(2015, 12, 25);
-            var event1_Info = new Event("Coffee break", 1, date1, date2);
+            var event1_Info = new Event("Coffee break", 1+0, date1, date2);
             var event1_Attendes = new List<Person>();
-            event1_Attendes.Add(new Person("Anna", "Jo", "1234", 098));
-            event1_Attendes.Add(new Person("John", "Jo", "5678", 091));
+            event1_Attendes.Add(new Person("Anna", "Jo", 1234, 098));
+            event1_Attendes.Add(new Person("John", "Jo", 5678, 091));
 
             var eventsInfo = new Dictionary<Event, List<Person>>()
             {
                 { event1_Info, event1_Attendes}
             };
 
+
             foreach (var happen in eventsInfo)
             {
-                Console.WriteLine(happen.Key.Name + " " + happen.Value[1].FirstName);
+                Console.WriteLine(happen.Key.Name + " " + happen.Value[0].FirstName);
             }
 
             var a = -1;
             while (a != 0)
             {
-
+                Menu();
                 var choice = int.Parse(Console.ReadLine());
-                switch (choice)
+                var option = (Option)choice;
+
+                switch (option)
                 {
-                    case 1:
+                    case Option.AddEvent:
                         AddEvent(eventsInfo);
                         break;
-                    case 2:
+
+                    case Option.DeleteEvent:
                         DeleteOrEditEvent(eventsInfo, "izbrisati");
                         break;
-                    case 3:
+
+                    case Option.EditEvent:
                         DeleteOrEditEvent(eventsInfo, "editirati");
                         break;
-                    case 4:
+
+                    case Option.AddPersonToEvent:
                         AddPersonToEvent(eventsInfo);
                         break;
-                    case 5:
+
+                    case Option.RemovePersonFromEvent:
                         RemovePersonFromEvent(eventsInfo);
                         break;
-                    case 6:
-                        a = 0;
+
+                    case Option.PrintEventInfo:
+                        PrintEventInfo(eventsInfo);
+                        break;
+
+                    case Option.StopApp:
+                        StopApp(ref a); 
                         break;
 
                     default:
-
                         Console.WriteLine("Krivi unos");
                         break;
-
-
                 }
             }
-
-            foreach (var item in eventsInfo)
-                Console.WriteLine(item.Key.Name);
-
-
-
-            /*
-
-            var myEvent = new Event("me", 1,5,6);
-            Console.WriteLine(myEvent.TypeOfEvent);
-            */
-
-
-            //}
         }
-        //
+
+
+        enum Option
+        {
+            AddEvent = 1,
+            DeleteEvent = 2,
+            EditEvent = 3,
+            AddPersonToEvent = 4,
+            RemovePersonFromEvent = 5,
+            PrintEventInfo = 6,
+            StopApp = 7
+        }
+
+
+        static void Menu()
+        {
+            Console.WriteLine(
+                
+                "\nOdaberite akciju:\n"
+                + " 1 - Dodavanje event-a\n" 
+                + " 2 - Brisanje event-a\n"
+                + " 3 - Editiranje event-a\n"
+                + " 4 - Dodavanje osobe na event\n"
+                + " 5 - Uklanjanje osobe s event-a\n"
+                + " 6 - Ispis detalja event-a\n"
+                + " 7 - Prekid rada\n"
+
+                );
+        }
+
         static DateTime setDateTime()
         {
             var a = -1;
@@ -113,7 +132,7 @@ namespace internship_3_oop_intro
             }
         }
 
-        //
+        
         static void AddEvent(Dictionary<Event, List<Person>> dictionary)
         {
             var a = -1;
@@ -162,7 +181,7 @@ namespace internship_3_oop_intro
                 }
                 else
                 {
-                    Console.WriteLine("Niste unijeli broj. Ponovite unos");
+                    Console.WriteLine("Niste unijeli broj. Ponovite unos.");
                 }
             }
 
@@ -194,6 +213,13 @@ namespace internship_3_oop_intro
             var newEvent = new Event(name, typeOfEvent, startTime, endTime);
             var eventAttendes = new List<Person>();
             dictionary.Add(newEvent, eventAttendes);
+            var i = 0;
+            Console.WriteLine("Ovo je Vaš trenutni popis event-ova:");
+            foreach (var item in dictionary)
+            {
+                Console.WriteLine(" " + i + " - " + item.Key.Name + " (" + item.Key.TypeOfEvent + ") (Početak event-a: " + item.Key.StartTime + " , kraj event-a: " + item.Key.EndTime + ") ");
+                i++;
+            }
         }
 
 
@@ -210,12 +236,12 @@ namespace internship_3_oop_intro
                 i = 0;
                 if (dictionary.Count == 0)
                 {
-                    Console.WriteLine("Vaš popis je već prazan");
+                    Console.WriteLine("Nemate unesenih event-ova.");
                     a = 0;
                 }
                 else
                 {
-                    Console.WriteLine("Ovo je vaš trenutni popis event-ova:");
+                    Console.WriteLine("Ovo je Vaš trenutni popis event-ova:");
                     foreach (var item in dictionary)
                     {
                         Console.WriteLine(" " + i + " - " + item.Key.Name + " (Početak event-a: " + item.Key.StartTime + " , kraj event-a: " + item.Key.EndTime + ") ");
@@ -239,7 +265,7 @@ namespace internship_3_oop_intro
                     }
                     else
                     {
-                        Console.WriteLine("Niste unijeli broj. Ponovite unos");
+                        Console.WriteLine("Niste unijeli broj. Ponovite unos.");
                     }
                 }
             }
@@ -265,15 +291,22 @@ namespace internship_3_oop_intro
                     i = 0;
                     if (dictionary.Count == 0)
                     {
-                        Console.WriteLine("Popis event-ova je prazan");
+                        Console.WriteLine("Nemate unesenih event-ova.");
                     }
                     else
                     {
-                        Console.WriteLine("Ovo ja vaš trenutni popis event-ova:");
-                        foreach (var item in dictionary)
+                        Console.WriteLine("Ovo ja Vaš trenutni popis event-ova:");
+                        if(dictionary.Count != 0)
                         {
-                            Console.WriteLine(" " + i + " - " + item.Key.Name + " (Početak event-a: " + item.Key.StartTime + " , kraj event-a: " + item.Key.EndTime + ") ");
-                            i++;
+                            foreach (var item in dictionary)
+                            {
+                                Console.WriteLine(" " + i + " - " + item.Key.Name + " (Početak event-a: " + item.Key.StartTime + " , kraj event-a: " + item.Key.EndTime + ") ");
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Nemate unesenih event-ova.");
                         }
                     }
                 }
@@ -286,7 +319,7 @@ namespace internship_3_oop_intro
 
                     while (b != 0)
                     {
-                        Console.WriteLine("Unesite ime  event-a: ");
+                        Console.WriteLine("Unesite ime event-a: ");
                         name = Console.ReadLine();
                         if (name.Length == 0)
                         {
@@ -327,7 +360,7 @@ namespace internship_3_oop_intro
                         }
                         else
                         {
-                            Console.WriteLine("Niste unijeli broj. Ponovite unos");
+                            Console.WriteLine("Niste unijeli broj. Ponovite unos.");
                         }
                     }
 
@@ -394,7 +427,7 @@ namespace internship_3_oop_intro
                     bool isNumber = Int32.TryParse(input, out number);
                     if (isNumber)
                     {
-                        if (number >= 0 && number <= dictionary.Count)
+                        if (number >= 0 && number < dictionary.Count)
                         {
                             eventIndex = number;
                             a = 0;
@@ -406,7 +439,7 @@ namespace internship_3_oop_intro
                     }
                     else
                     {
-                        Console.WriteLine("Niste unijeli broj. Ponovite unos");
+                        Console.WriteLine("Niste unijeli broj. Ponovite unos.");
                     }
                 }
                 i = 0;
@@ -430,7 +463,7 @@ namespace internship_3_oop_intro
             }
             else
             {
-                Console.WriteLine("Popis event-ova je prazan.");
+                Console.WriteLine("Nemate unesenih event-ova.");
             }
         }
 
@@ -439,10 +472,10 @@ namespace internship_3_oop_intro
         {
             var firstName = "";
             var lastName = "";
-            var oib = "";
+            var oib = -1;
             var phoneNumber = -1;
             var a = -1;
-            var newPerson = new Person("", "", "", 091);
+            var newPerson = new Person("", "", 123, 091);
 
 
             a = -1;
@@ -487,16 +520,19 @@ namespace internship_3_oop_intro
                     Console.WriteLine("Niste unijeli broj. Ponovite unos.");
                 }
             }
-
-
+            
             a = -1;
             while (a != 0)
             {
-                var doesOIBExist = false;
-                Console.WriteLine("Unesite broj OIB osobe: ");
-                oib = Console.ReadLine();
-                if (isValidStringInput(oib))
+                Console.WriteLine("Unesite ispravan OIB broj osobe: ");
+                var input = Console.ReadLine();
+                var number = -1;
+                bool isNumber = Int32.TryParse(input, out number);
+
+                if (isNumber)
                 {
+                    oib = number;
+                    var doesOIBExist = false;
                     foreach (var existingEvent in dictionary.Keys)
                     {
                         foreach (var person in dictionary[existingEvent])
@@ -510,12 +546,16 @@ namespace internship_3_oop_intro
 
                     if (doesOIBExist)
                     {
-                        Console.WriteLine("Osoba s unesenim OIB-om već postoji. Unesite ispravan OIB.");
+                        Console.WriteLine("Osoba s unesenim OIB-om već postoji.");
                     }
                     else
                     {
                         a = 0;
                     }
+                }
+                else
+                {
+                    Console.WriteLine("Niste unijeli broj. Ponovite unos.");
                 }
             }
             newPerson.FirstName = firstName;
@@ -528,15 +568,284 @@ namespace internship_3_oop_intro
 
         static void RemovePersonFromEvent(Dictionary<Event, List<Person>> dictionary)
         {
+            DateTime date1 = new DateTime(2015, 12, 24);
+            DateTime date2 = new DateTime(2015, 12, 25);
+            var chosenEvent = new Event("test", 0, date1, date2);
+            var chosenPerson = new Person("","",1,1);
+            var a = -1;
+            int oib = -1;
+            Console.WriteLine("Odabrali ste: brisanje osobe u event-u.");
+            if (dictionary.Count != 0)
+            { 
+            Console.WriteLine("Odaberite u kojem event-u želite ukloniti osobu odabirom odgovarajućeg broja event-a:");
+            var i = 0;
+            int eventIndex = -1;
+                foreach (var item in dictionary)
+                {
+                    Console.WriteLine(i + " - " + item.Key.Name);
+                    i++;
+                }
+            
+            while (a != 0)
+            {
+                var input = Console.ReadLine();
+                var number = -1;
+                bool isNumber = Int32.TryParse(input, out number);
+                if (isNumber)
+                {
+                    if (number >= 0 && number < dictionary.Count)
+                    {
+                        eventIndex = number;
+                        a = 0;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Unijeli ste broj koji nije ponuđen. Ponovite unos.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Niste unijeli broj. Ponovite unos.");
+                }
+            }
+            i = 0;
+            foreach (var item in dictionary)
+            {
+                if (eventIndex == i)
+                {
+                    chosenEvent = item.Key;
+                }
+                i++;
+            }
+                if (dictionary[chosenEvent].Count != 0)
+                {
+                    //
+
+
+                    Console.WriteLine("Event " + chosenEvent.Name + " trenutno ima sudionike:");
+                    foreach (var person in dictionary[chosenEvent])
+                    {
+                        Console.WriteLine(person.FirstName + " " + person.LastName + " ( OIB : " + person.OIB + " )");
+                    }
+                    Console.WriteLine("Unesite OIB osobe koju želite ukloniti s event-a " + chosenEvent.Name);
+                    a = -1;
+                    while (a != 0)
+                    {
+                        Console.WriteLine("Unesite ispravan OIB broj osobe: ");
+                        var input = Console.ReadLine();
+                        var number = -1;
+                        bool isNumber = Int32.TryParse(input, out number);
+
+                        if (isNumber)
+                        {
+                            oib = number;
+                            var doesOIBExist = false;
+                            foreach (var existingEvent in dictionary.Keys)
+                            {
+                                foreach (var person in dictionary[existingEvent])
+                                {
+                                    if (person.OIB == oib)
+                                    {
+                                        doesOIBExist = true;
+                                        chosenPerson = person;
+                                    }
+                                }
+                            }
+
+                            if (!doesOIBExist)
+                            {
+                                Console.WriteLine("Osoba s unesenim OIB-om ne postoji.");
+                            }
+                            else
+                            {
+                                a = 0;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Niste unijeli broj. Ponovite unos.");
+                        }
+                    }
+                    dictionary[chosenEvent].Remove(chosenPerson);
+                }
+                
+                if (dictionary[chosenEvent].Count != 0)
+                {
+                    Console.WriteLine("Event " + chosenEvent.Name + " trenutno ima sudionike:");
+                    foreach (var person in dictionary[chosenEvent])
+                    {
+                        Console.WriteLine(person.FirstName + " " + person.LastName + " ( OIB : " + person.OIB + " )");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Odabrani event nema unesenih sudionika.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Nemate unesenih event-ova.");
+            }   
+        }
+
+
+        static int EventInfoSubMenu()
+        {
+            var a = -1;
+            int typeOfPrintingEventInfo = -1;
+            while (a != 0)
+            {
+                Console.WriteLine("\nOdaberite vrstu ispisa detalja event-a unosom odgovarajućeg broja:");
+                Console.WriteLine(
+                "\n"+
+                " 1 - Ispis detalja eventa u formatu:( name – event type – start time – end time – trajanje u satima – ispis broja ljudi na eventu )\n" +
+                " 2 - Ispis svih osoba na eventu u formatu:( [Redni broj u listi]. name – last name – broj mobitela )\n" +
+                " 3 - Ispis svih detalja (i opcija 1 i opcija 2)\n" +
+                " 4 - Izlazak iz podmenija\n"
+                );
+                var input = Console.ReadLine();
+                var number = -1;
+                bool isNumber = Int32.TryParse(input, out number);
+                if (isNumber)
+                {
+                    if (number >= 1 && number <= 4)
+                    {
+                        typeOfPrintingEventInfo = number;
+                        a = 0;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Unijeli ste broj koji nije ponuđen. Ponovite unos.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Niste unijeli broj. Ponovite unos.");
+                }
+            }
+            return typeOfPrintingEventInfo;
+        }
+
+
+        static void printEventInfo1(Dictionary<Event, List<Person>> dictionary)
+        {
+            if(dictionary.Keys.Count != 0)
+            {
+                Console.WriteLine("Izabrali ste: ispis detalja event-ova u 1. formatu.");
+                foreach (var existingEvent in dictionary.Keys)
+                {
+                    var duration = (existingEvent.EndTime - existingEvent.StartTime).TotalHours;
+                    Console.WriteLine(
+                        "( "
+                        + existingEvent.Name
+                        + " - " + existingEvent.TypeOfEvent
+                        + " - " + existingEvent.StartTime
+                        + " - " + existingEvent.EndTime
+                        + " - " + duration
+                        + " - " + dictionary[existingEvent].Count
+                        + " )"
+                        );
+                }
+            }
+            else
+            {
+                Console.WriteLine("Nemate unesenih event-ova.");
+            }
 
         }
 
+
+        static void printEventInfo2(Dictionary<Event, List<Person>> dictionary)
+        {
+            if (dictionary.Keys.Count != 0)
+            {
+                Console.WriteLine("Izabrali ste: ispis detalja event-ova u 2. formatu.");
+                foreach (var existingEventKey in dictionary.Keys)
+                {
+                    if (dictionary[existingEventKey].Count != 0)
+                    {
+                        var i = 0;
+                        Console.WriteLine("Event " + existingEventKey.Name);
+                        foreach (var person in dictionary[existingEventKey])
+                        {
+                            Console.WriteLine(
+                            "( "
+                            + "[" + i + "] "
+                            + person.FirstName
+                            + " - " + person.LastName
+                            + " - " + person.PhoneNumber
+                            + " )"
+                            );
+                            i++;
+                        }
+                        Console.WriteLine();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Za event " + existingEventKey.Name + " nemate unesenih osoba.");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Nemate unesenih event-ova.");
+            }
+        }
+
+        static void PrintEventInfo(Dictionary<Event, List<Person>> dictionary)
+        {
+            Console.WriteLine("Odabrali ste: ispis svih detalja event-ova.");
+            
+            if(dictionary.Count != 0)
+            {
+                var a = -1;
+                while (a != 0)
+                {
+                    var typeOfPrintingEventInfo = EventInfoSubMenu();
+
+                    if (typeOfPrintingEventInfo == 1)
+                        printEventInfo1(dictionary);
+
+                    else if (typeOfPrintingEventInfo == 2)
+                        printEventInfo2(dictionary);
+
+                    else if (typeOfPrintingEventInfo == 3)
+                    {
+                        Console.WriteLine("Odabrali ste: ispis detalja i u 1. i 2. formatu.");
+                        Console.WriteLine();
+                        printEventInfo1(dictionary);
+                        Console.WriteLine();
+                        printEventInfo2(dictionary);
+                    }
+                    else
+                    {
+                        a = 0;
+                        Console.WriteLine("Izašli ste iz podmenija.");
+                    }
+                }
+            }
+
+            else
+            {
+                Console.WriteLine("Nemate unesenih event-ova.");
+            }
+        }
+
+
+        static void StopApp(ref int a)
+        {
+            Console.WriteLine("Prekinuli ste rad aplikacije.");
+            a = 0;
+        }
+     
+         
     }
 }
 
 /*
- * dodatni features:
- -funkcija za provjeru unosa broja
+dodatni features:
+-func za provjeru unosa broja
 -popravi za dodavanj eventa ne smiju imat preklapanje u vrimenu / overlaping
-- funkc kod unosa i edita eventa
+-func kod unosa i edita eventa
+-switch and enum 
  */

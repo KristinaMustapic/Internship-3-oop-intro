@@ -6,7 +6,7 @@ namespace internship_3_oop_intro
 {
     public class Event
     {
-        public Event(string name, int eventType, int startTime, int endTime)
+        public Event(string name, int eventType, DateTime startTime, DateTime endTime)
         {
             Name = name;
             TypeOfEvent = (EventType)eventType;
@@ -16,8 +16,8 @@ namespace internship_3_oop_intro
         }
         public string Name { get; set; }
         public EventType TypeOfEvent { get; set; }
-        public int StartTime { get; set; }
-        public int EndTime { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
 
 
 

@@ -5,28 +5,19 @@ using System.Collections.Generic;
 namespace internship_3_oop_intro
 {
     class Program
-    {
-
+    { 
         static void Main(string[] args)
-        {
-            //Testing example
-            DateTime date1 = new DateTime(2015, 12, 24);
-            DateTime date2 = new DateTime(2015, 12, 27);
-            var event1_Info = new Event("Coffee break", 1+0, date1, date2);
-            var event1_Attendes = new List<Person>();
-            event1_Attendes.Add(new Person("Anna", "Jo", 1234, 098));
-            event1_Attendes.Add(new Person("John", "Jo", 5678, 091));
-
+        {  
             var eventsInfo = new Dictionary<Event, List<Person>>()
             {
-                { event1_Info, event1_Attendes}
+                { new Event("Coffee time", 0, new DateTime(2015, 12, 24), new DateTime(2015, 12, 27)), new List<Person>(){new Person("Anna", "Jo", 1234, 098), new Person("John", "Jo", 5678, 0981)} },
+                { new Event("Music festival", 0, new DateTime(2019, 07, 14), new DateTime(2019, 07, 17)), new List<Person>(){} }
             };
 
             var a = -1;
             while (a != 0)
             {
                 Menu();
-                //var choice = int.Parse(Console.ReadLine());
                 var input = Console.ReadLine();
                 var choice = -1;
                 isValidNumberInput(input, ref choice);
@@ -903,8 +894,3 @@ namespace internship_3_oop_intro
     }
 }
 
-/*
-dodatni features:
--func za provjeru unosa broja
--func kod unosa i edita eventa
- */
